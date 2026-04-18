@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://bj25y5pcrvr4s"]
+
+[node name="Temp" type="Control"]
+layout_mode = 3
+anchors_preset = 0

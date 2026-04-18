@@ -1,0 +1,842 @@
+[gd_scene load_steps=28 format=3 uid="uid://cmlp1740qii6l"]
+
+[ext_resource type="Script" uid="uid://dlbh1ljyh2d48" path="res://RobotUI.gd" id="1_robotui"]
+[ext_resource type="Script" path="res://Crosshair.gd" id="2_crosshair"]
+[ext_resource type="Script" path="res://FaceBox.gd" id="3_facebox"]
+[ext_resource type="Script" path="res://CameraFeed.gd" id="4_camerafeed"]
+
+[sub_resource type="StyleBoxFlat" id="side_panel_bg"]
+bg_color = Color(0.039, 0.039, 0.039, 1)
+border_width_left = 1
+border_color = Color(0.086, 0.086, 0.086, 1)
+
+[sub_resource type="StyleBoxFlat" id="test_panel_bg"]
+bg_color = Color(0.031, 0.031, 0.031, 1)
+border_width_left = 1
+border_color = Color(0.102, 0.102, 0.102, 1)
+
+[sub_resource type="StyleBoxFlat" id="expr_normal"]
+bg_color = Color(0.067, 0.067, 0.067, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.118, 0.118, 0.118, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="expr_hover"]
+bg_color = Color(0.086, 0.086, 0.086, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.118, 0.118, 0.118, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="sweep_normal"]
+bg_color = Color(0.059, 0.059, 0.059, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.102, 0.102, 0.102, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="sweep_hover"]
+bg_color = Color(0.086, 0.086, 0.086, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.102, 0.102, 0.102, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="metric_card_bg"]
+bg_color = Color(0.059, 0.059, 0.059, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 6.0
+content_margin_right = 6.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id="slider_track"]
+bg_color = Color(0.102, 0.102, 0.102, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+content_margin_top = 6.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="slider_fill"]
+bg_color = Color(0.094, 0.373, 0.647, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+content_margin_top = 6.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="log_bg"]
+bg_color = Color(0.020, 0.020, 0.020, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxEmpty" id="flat_style"]
+
+[node name="RobotControl" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_robotui")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.039, 0.039, 0.039, 1)
+
+[node name="MainLayout" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="CameraArea" type="Control" parent="MainLayout"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CameraRect" type="ColorRect" parent="MainLayout/CameraArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.059, 0.059, 0.059, 1)
+
+[node name="CameraView" type="TextureRect" parent="MainLayout/CameraArea"]
+script = ExtResource("4_camerafeed")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 3
+stretch_mode = 6
+
+[node name="Crosshair" type="Control" parent="MainLayout/CameraArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_crosshair")
+
+[node name="FaceBox" type="Control" parent="MainLayout/CameraArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_facebox")
+
+[node name="DistLabel" type="Label" parent="MainLayout/CameraArea"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -36.0
+offset_right = 50.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.0, 0.910, 0.478, 1)
+theme_override_font_sizes/font_size = 13
+text = ""
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="TrackingBadge" type="Label" parent="MainLayout/CameraArea"]
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 140.0
+offset_bottom = 30.0
+grow_horizontal = 1
+grow_vertical = 1
+theme_override_colors/font_color = Color(0.0, 0.910, 0.478, 1)
+theme_override_font_sizes/font_size = 12
+text = "◆ MANUAL"
+mouse_filter = 2
+
+[node name="TapZone" type="Button" parent="MainLayout/CameraArea"]
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -44.0
+offset_top = -44.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 0
+grow_vertical = 0
+modulate = Color(1, 1, 1, 0)
+theme_override_styles/normal = SubResource("flat_style")
+theme_override_styles/hover = SubResource("flat_style")
+theme_override_styles/pressed = SubResource("flat_style")
+theme_override_styles/focus = SubResource("flat_style")
+mouse_filter = 0
+
+[node name="SidePanel" type="PanelContainer" parent="MainLayout"]
+layout_mode = 2
+custom_minimum_size = Vector2(220, 0)
+size_flags_horizontal = 0
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("side_panel_bg")
+
+[node name="SideMargin" type="MarginContainer" parent="MainLayout/SidePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="SideVBox" type="VBoxContainer" parent="MainLayout/SidePanel/SideMargin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StatusSection" type="VBoxContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StatusRow" type="HBoxContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox/StatusSection"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatusDot" type="ColorRect" parent="MainLayout/SidePanel/SideMargin/SideVBox/StatusSection/StatusRow"]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.0, 0.910, 0.478, 1)
+
+[node name="StatusLabel" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/StatusSection/StatusRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0, 0.910, 0.478, 1)
+theme_override_font_sizes/font_size = 11
+text = "TRACKING"
+vertical_alignment = 1
+
+[node name="SubStatusLabel" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/StatusSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.102, 0.290, 0.165, 1)
+theme_override_font_sizes/font_size = 9
+text = "face locked"
+
+[node name="Div1" type="HSeparator" parent="MainLayout/SidePanel/SideMargin/SideVBox"]
+layout_mode = 2
+theme_override_colors/separator_color = Color(0.086, 0.086, 0.086, 1)
+
+[node name="MetricsSection" type="VBoxContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="PositionLbl" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.165, 0.165, 0.165, 1)
+theme_override_font_sizes/font_size = 8
+text = "POSITION"
+
+[node name="MetricsGrid" type="GridContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection"]
+layout_mode = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 2
+
+[node name="DistCard" type="PanelContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("metric_card_bg")
+
+[node name="DistCardBox" type="VBoxContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/DistCard"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="DistVal" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/DistCard/DistCardBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.800, 0.800, 0.800, 1)
+theme_override_font_sizes/font_size = 13
+text = "--"
+
+[node name="DistLbl" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/DistCard/DistCardBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.200, 0.200, 0.200, 1)
+theme_override_font_sizes/font_size = 8
+text = "DIST"
+
+[node name="OffXCard" type="PanelContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("metric_card_bg")
+
+[node name="OffXCardBox" type="VBoxContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/OffXCard"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="OffXVal" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/OffXCard/OffXCardBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.800, 0.800, 0.800, 1)
+theme_override_font_sizes/font_size = 13
+text = "--"
+
+[node name="OffXLbl" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/OffXCard/OffXCardBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.200, 0.200, 0.200, 1)
+theme_override_font_sizes/font_size = 8
+text = "OFF X"
+
+[node name="ServoHCard" type="PanelContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("metric_card_bg")
+
+[node name="ServoHCardBox" type="VBoxContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/ServoHCard"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ServoHVal" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/ServoHCard/ServoHCardBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.800, 0.800, 0.800, 1)
+theme_override_font_sizes/font_size = 13
+text = "--"
+
+[node name="ServoHLbl" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/ServoHCard/ServoHCardBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.200, 0.200, 0.200, 1)
+theme_override_font_sizes/font_size = 8
+text = "H SERVO"
+
+[node name="ServoVCard" type="PanelContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("metric_card_bg")
+
+[node name="ServoVCardBox" type="VBoxContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/ServoVCard"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ServoVVal" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/ServoVCard/ServoVCardBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.800, 0.800, 0.800, 1)
+theme_override_font_sizes/font_size = 13
+text = "--"
+
+[node name="ServoVLbl" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/MetricsSection/MetricsGrid/ServoVCard/ServoVCardBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.200, 0.200, 0.200, 1)
+theme_override_font_sizes/font_size = 8
+text = "V SERVO"
+
+[node name="Div2" type="HSeparator" parent="MainLayout/SidePanel/SideMargin/SideVBox"]
+layout_mode = 2
+theme_override_colors/separator_color = Color(0.086, 0.086, 0.086, 1)
+
+[node name="ExprSection" type="VBoxContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ExprLbl" type="Label" parent="MainLayout/SidePanel/SideMargin/SideVBox/ExprSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.165, 0.165, 0.165, 1)
+theme_override_font_sizes/font_size = 8
+text = "EXPRESSION"
+
+[node name="ExprGrid" type="GridContainer" parent="MainLayout/SidePanel/SideMargin/SideVBox/ExprSection"]
+layout_mode = 2
+theme_override_constants/h_separation = 3
+theme_override_constants/v_separation = 3
+columns = 2
+
+[node name="BtnSad" type="Button" parent="MainLayout/SidePanel/SideMargin/SideVBox/ExprSection/ExprGrid"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("expr_normal")
+theme_override_styles/hover = SubResource("expr_hover")
+theme_override_styles/pressed = SubResource("expr_hover")
+theme_override_styles/focus = SubResource("expr_normal")
+text = "sad"
+
+[node name="BtnAngry" type="Button" parent="MainLayout/SidePanel/SideMargin/SideVBox/ExprSection/ExprGrid"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("expr_normal")
+theme_override_styles/hover = SubResource("expr_hover")
+theme_override_styles/pressed = SubResource("expr_hover")
+theme_override_styles/focus = SubResource("expr_normal")
+text = "angry"
+
+[node name="BtnNeutral" type="Button" parent="MainLayout/SidePanel/SideMargin/SideVBox/ExprSection/ExprGrid"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("expr_normal")
+theme_override_styles/hover = SubResource("expr_hover")
+theme_override_styles/pressed = SubResource("expr_hover")
+theme_override_styles/focus = SubResource("expr_normal")
+text = "neutral"
+
+[node name="BtnBlink" type="Button" parent="MainLayout/SidePanel/SideMargin/SideVBox/ExprSection/ExprGrid"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("expr_normal")
+theme_override_styles/hover = SubResource("expr_hover")
+theme_override_styles/pressed = SubResource("expr_hover")
+theme_override_styles/focus = SubResource("expr_normal")
+text = "blink"
+
+[node name="TestPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_right = 340.0
+grow_horizontal = 1
+grow_vertical = 2
+theme_override_styles/panel = SubResource("test_panel_bg")
+
+[node name="TestMargin" type="MarginContainer" parent="TestPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="TestVBox" type="VBoxContainer" parent="TestPanel/TestMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TestHeader" type="HBoxContainer" parent="TestPanel/TestMargin/TestVBox"]
+layout_mode = 2
+
+[node name="TestHeaderLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/TestHeader"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.200, 0.200, 0.200, 1)
+theme_override_font_sizes/font_size = 9
+text = "TEST PANEL"
+vertical_alignment = 1
+
+[node name="TestHeaderSpacer" type="Control" parent="TestPanel/TestMargin/TestVBox/TestHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseBtn" type="Button" parent="TestPanel/TestMargin/TestVBox/TestHeader"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("flat_style")
+theme_override_styles/hover = SubResource("flat_style")
+theme_override_styles/pressed = SubResource("flat_style")
+theme_override_styles/focus = SubResource("flat_style")
+text = "×"
+flat = true
+
+[node name="ConnectionSection" type="VBoxContainer" parent="TestPanel/TestMargin/TestVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ConnLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/ConnectionSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.133, 0.133, 0.133, 1)
+theme_override_font_sizes/font_size = 8
+text = "CONNECTIONS"
+
+[node name="DotsRow" type="HBoxContainer" parent="TestPanel/TestMargin/TestVBox/ConnectionSection"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BridgeItem" type="HBoxContainer" parent="TestPanel/TestMargin/TestVBox/ConnectionSection/DotsRow"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="BridgeDot" type="ColorRect" parent="TestPanel/TestMargin/TestVBox/ConnectionSection/DotsRow/BridgeItem"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.886, 0.298, 0.290, 1)
+
+[node name="BridgeLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/ConnectionSection/DotsRow/BridgeItem"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 9
+text = "bridge"
+vertical_alignment = 1
+
+[node name="ArduinoItem" type="HBoxContainer" parent="TestPanel/TestMargin/TestVBox/ConnectionSection/DotsRow"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ArduinoDot" type="ColorRect" parent="TestPanel/TestMargin/TestVBox/ConnectionSection/DotsRow/ArduinoItem"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.886, 0.298, 0.290, 1)
+
+[node name="ArduinoLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/ConnectionSection/DotsRow/ArduinoItem"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 9
+text = "arduino"
+vertical_alignment = 1
+
+[node name="CameraItem" type="HBoxContainer" parent="TestPanel/TestMargin/TestVBox/ConnectionSection/DotsRow"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CameraDot" type="ColorRect" parent="TestPanel/TestMargin/TestVBox/ConnectionSection/DotsRow/CameraItem"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.886, 0.298, 0.290, 1)
+
+[node name="CameraLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/ConnectionSection/DotsRow/CameraItem"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 9
+text = "camera"
+vertical_alignment = 1
+
+[node name="TestExprSection" type="VBoxContainer" parent="TestPanel/TestMargin/TestVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TestExprLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/TestExprSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.133, 0.133, 0.133, 1)
+theme_override_font_sizes/font_size = 8
+text = "EXPRESSION"
+
+[node name="TestExprGrid" type="GridContainer" parent="TestPanel/TestMargin/TestVBox/TestExprSection"]
+layout_mode = 2
+theme_override_constants/h_separation = 3
+theme_override_constants/v_separation = 3
+columns = 2
+
+[node name="TestBtnSad" type="Button" parent="TestPanel/TestMargin/TestVBox/TestExprSection/TestExprGrid"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("expr_normal")
+theme_override_styles/hover = SubResource("expr_hover")
+theme_override_styles/pressed = SubResource("expr_hover")
+theme_override_styles/focus = SubResource("expr_normal")
+text = "sad"
+
+[node name="TestBtnAngry" type="Button" parent="TestPanel/TestMargin/TestVBox/TestExprSection/TestExprGrid"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("expr_normal")
+theme_override_styles/hover = SubResource("expr_hover")
+theme_override_styles/pressed = SubResource("expr_hover")
+theme_override_styles/focus = SubResource("expr_normal")
+text = "angry"
+
+[node name="TestBtnNeutral" type="Button" parent="TestPanel/TestMargin/TestVBox/TestExprSection/TestExprGrid"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("expr_normal")
+theme_override_styles/hover = SubResource("expr_hover")
+theme_override_styles/pressed = SubResource("expr_hover")
+theme_override_styles/focus = SubResource("expr_normal")
+text = "neutral"
+
+[node name="TestBtnBlink" type="Button" parent="TestPanel/TestMargin/TestVBox/TestExprSection/TestExprGrid"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("expr_normal")
+theme_override_styles/hover = SubResource("expr_hover")
+theme_override_styles/pressed = SubResource("expr_hover")
+theme_override_styles/focus = SubResource("expr_normal")
+text = "blink"
+
+[node name="ServoTestSection" type="VBoxContainer" parent="TestPanel/TestMargin/TestVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ServoLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/ServoTestSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.133, 0.133, 0.133, 1)
+theme_override_font_sizes/font_size = 8
+text = "SERVOS"
+
+[node name="HRow" type="HBoxContainer" parent="TestPanel/TestMargin/TestVBox/ServoTestSection"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/ServoTestSection/HRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(16, 0)
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 9
+text = "H"
+vertical_alignment = 1
+
+[node name="SliderH" type="HSlider" parent="TestPanel/TestMargin/TestVBox/ServoTestSection/HRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.0
+max_value = 180.0
+value = 80.0
+theme_override_styles/slider = SubResource("slider_track")
+theme_override_styles/grabber_area = SubResource("slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("slider_fill")
+
+[node name="HValLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/ServoTestSection/HRow"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.533, 0.533, 0.533, 1)
+theme_override_font_sizes/font_size = 9
+text = "80°"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="VRow" type="HBoxContainer" parent="TestPanel/TestMargin/TestVBox/ServoTestSection"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="VLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/ServoTestSection/VRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(16, 0)
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 9
+text = "V"
+vertical_alignment = 1
+
+[node name="SliderV" type="HSlider" parent="TestPanel/TestMargin/TestVBox/ServoTestSection/VRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.0
+max_value = 180.0
+value = 60.0
+theme_override_styles/slider = SubResource("slider_track")
+theme_override_styles/grabber_area = SubResource("slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("slider_fill")
+
+[node name="VValLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/ServoTestSection/VRow"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.533, 0.533, 0.533, 1)
+theme_override_font_sizes/font_size = 9
+text = "60°"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="CenterBtn" type="Button" parent="TestPanel/TestMargin/TestVBox/ServoTestSection"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("sweep_normal")
+theme_override_styles/hover = SubResource("sweep_hover")
+theme_override_styles/pressed = SubResource("sweep_hover")
+theme_override_styles/focus = SubResource("sweep_normal")
+text = "center"
+
+[node name="SweepSection" type="VBoxContainer" parent="TestPanel/TestMargin/TestVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SweepLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/SweepSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.133, 0.133, 0.133, 1)
+theme_override_font_sizes/font_size = 8
+text = "SWEEP"
+
+[node name="SweepFlow" type="HFlowContainer" parent="TestPanel/TestMargin/TestVBox/SweepSection"]
+layout_mode = 2
+theme_override_constants/h_separation = 3
+theme_override_constants/v_separation = 3
+
+[node name="BtnNod" type="Button" parent="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("sweep_normal")
+theme_override_styles/hover = SubResource("sweep_hover")
+theme_override_styles/pressed = SubResource("sweep_hover")
+theme_override_styles/focus = SubResource("sweep_normal")
+text = "nod"
+
+[node name="BtnShake" type="Button" parent="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("sweep_normal")
+theme_override_styles/hover = SubResource("sweep_hover")
+theme_override_styles/pressed = SubResource("sweep_hover")
+theme_override_styles/focus = SubResource("sweep_normal")
+text = "shake"
+
+[node name="BtnSweepH" type="Button" parent="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("sweep_normal")
+theme_override_styles/hover = SubResource("sweep_hover")
+theme_override_styles/pressed = SubResource("sweep_hover")
+theme_override_styles/focus = SubResource("sweep_normal")
+text = "H"
+
+[node name="BtnSweepV" type="Button" parent="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("sweep_normal")
+theme_override_styles/hover = SubResource("sweep_hover")
+theme_override_styles/pressed = SubResource("sweep_hover")
+theme_override_styles/focus = SubResource("sweep_normal")
+text = "V"
+
+[node name="BtnSweepAll" type="Button" parent="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("sweep_normal")
+theme_override_styles/hover = SubResource("sweep_hover")
+theme_override_styles/pressed = SubResource("sweep_hover")
+theme_override_styles/focus = SubResource("sweep_normal")
+text = "all"
+
+[node name="BtnSweepHFast" type="Button" parent="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("sweep_normal")
+theme_override_styles/hover = SubResource("sweep_hover")
+theme_override_styles/pressed = SubResource("sweep_hover")
+theme_override_styles/focus = SubResource("sweep_normal")
+text = "H fast"
+
+[node name="BtnSweepVFast" type="Button" parent="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.267, 0.267, 0.267, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("sweep_normal")
+theme_override_styles/hover = SubResource("sweep_hover")
+theme_override_styles/pressed = SubResource("sweep_hover")
+theme_override_styles/focus = SubResource("sweep_normal")
+text = "V fast"
+
+[node name="LogSection" type="VBoxContainer" parent="TestPanel/TestMargin/TestVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="LogLbl" type="Label" parent="TestPanel/TestMargin/TestVBox/LogSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.133, 0.133, 0.133, 1)
+theme_override_font_sizes/font_size = 8
+text = "LOG"
+
+[node name="LogPanel" type="RichTextLabel" parent="TestPanel/TestMargin/TestVBox/LogSection"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 9
+theme_override_styles/normal = SubResource("log_bg")
+bbcode_enabled = true
+scroll_following = true
+
+[connection signal="pressed" from="MainLayout/CameraArea/TapZone" to="." method="_on_tap_zone_pressed"]
+[connection signal="pressed" from="MainLayout/SidePanel/SideMargin/SideVBox/ExprSection/ExprGrid/BtnSad" to="." method="_on_btn_sad_pressed"]
+[connection signal="pressed" from="MainLayout/SidePanel/SideMargin/SideVBox/ExprSection/ExprGrid/BtnAngry" to="." method="_on_btn_angry_pressed"]
+[connection signal="pressed" from="MainLayout/SidePanel/SideMargin/SideVBox/ExprSection/ExprGrid/BtnNeutral" to="." method="_on_btn_neutral_pressed"]
+[connection signal="pressed" from="MainLayout/SidePanel/SideMargin/SideVBox/ExprSection/ExprGrid/BtnBlink" to="." method="_on_btn_blink_pressed"]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/TestHeader/CloseBtn" to="." method="_on_close_btn_pressed"]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/TestExprSection/TestExprGrid/TestBtnSad" to="." method="_on_test_btn_sad_pressed"]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/TestExprSection/TestExprGrid/TestBtnAngry" to="." method="_on_test_btn_angry_pressed"]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/TestExprSection/TestExprGrid/TestBtnNeutral" to="." method="_on_test_btn_neutral_pressed"]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/TestExprSection/TestExprGrid/TestBtnBlink" to="." method="_on_test_btn_blink_pressed"]
+[connection signal="value_changed" from="TestPanel/TestMargin/TestVBox/ServoTestSection/HRow/SliderH" to="." method="_on_slider_h_changed"]
+[connection signal="value_changed" from="TestPanel/TestMargin/TestVBox/ServoTestSection/VRow/SliderV" to="." method="_on_slider_v_changed"]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/ServoTestSection/CenterBtn" to="." method="_on_center_btn_pressed"]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow/BtnNod" to="." method="_on_sweep_pressed" binds=["sweep:nod"]]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow/BtnShake" to="." method="_on_sweep_pressed" binds=["sweep:shake"]]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow/BtnSweepH" to="." method="_on_sweep_pressed" binds=["sweep:h"]]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow/BtnSweepV" to="." method="_on_sweep_pressed" binds=["sweep:v"]]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow/BtnSweepAll" to="." method="_on_sweep_pressed" binds=["sweep:all"]]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow/BtnSweepHFast" to="." method="_on_sweep_pressed" binds=["sweep:h:fast"]]
+[connection signal="pressed" from="TestPanel/TestMargin/TestVBox/SweepSection/SweepFlow/BtnSweepVFast" to="." method="_on_sweep_pressed" binds=["sweep:v:fast"]]
+[connection signal="shm_connected" from="MainLayout/CameraArea/CameraView" to="." method="_on_camera_shm_connected"]
+[connection signal="shm_disconnected" from="MainLayout/CameraArea/CameraView" to="." method="_on_camera_shm_disconnected"]
+[connection signal="meta_updated" from="MainLayout/CameraArea/CameraView" to="." method="_on_camera_meta_updated"]
