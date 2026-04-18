@@ -1,4 +1,4 @@
-#define FASTLED_ALLOW_INTERRUPTS 0
+#define FASTLED_ALLOW_INTERRUPTS 1
 #include <FastLED.h>
 #include <Servo.h>
 
@@ -62,12 +62,18 @@ void neutralCloseEyes() {
 // ----------- SERVOS -----------
 void setServoH(int angle) {
   angle = constrain(angle, 0, 180);
+  servoH.attach(SERVO_H_PIN);
   servoH.write(angle);
+  delay(400);
+  servoH.detach();
 }
 
 void setServoV(int angle) {
   angle = constrain(angle, 0, 180);
+  servoV.attach(SERVO_V_PIN);
   servoV.write(angle);
+  delay(400);
+  servoV.detach();
 }
 
 // ----------- SWEEP -----------
@@ -180,8 +186,6 @@ void setup() {
   FastLED.clear();
   FastLED.show();
 
-  servoH.attach(SERVO_H_PIN);
-  servoV.attach(SERVO_V_PIN);
   setServoH(SERVO_H_CENTER);
   setServoV(SERVO_V_CENTER);
 

@@ -25,7 +25,7 @@ from multiprocessing.shared_memory import SharedMemory
 
 # ── File output paths (read by CameraFeed.gd) ────────────────────────────────
 FILE_FRAME = "/tmp/robot_frame.bin"
-FILE_META  = "/tmp/robot_meta.json"
+FILE_META = "/tmp/robot_meta.json"
 
 # ── Config ────────────────────────────────────────────────────────────────────
 CAMERA_INDEX = 0
@@ -36,15 +36,16 @@ FOCAL_LENGTH = 600
 # Servo config
 SERVO_H_CENTER = 80
 SERVO_V_CENTER = 60
-SERVO_H_MIN    = 40
-SERVO_H_MAX    = 120
-SERVO_V_MIN    = 30
-SERVO_V_MAX    = 90
-DEADZONE       = 0.06  # skip if both axes within this (normalized)
-SEND_INTERVAL  = 0.15  # seconds between servo commands
-SMOOTH         = 0.35  # how fast servo_h/v chase the target (0=frozen, 1=instant)
-INVERT_H       = True
-INVERT_V       = False
+SERVO_H_MIN = 30
+SERVO_H_MAX = 220
+SERVO_V_MIN = 30
+SERVO_V_MAX = 120
+DEADZONE = 0.15  # skip if both axes within this (normalized)
+SEND_INTERVAL = 0.2  # seconds between servo commands
+SMOOTH = 0.15  # how fast servo_h/v chase the target (0=frozen, 1=instant)
+SMOOTH_RETURN = 0.05  # how fast servos drift back to center when face is lost
+INVERT_H = True
+INVERT_V = False
 
 # Bridge
 BRIDGE_HOST = "localhost"
@@ -52,12 +53,13 @@ BRIDGE_PORT = 9000
 
 # Shared memory layout
 # robot_frame: [uint32 counter][uint32 width][uint32 height][RGB pixels 640*480*3]
-FRAME_W  = 640
-FRAME_H  = 480
+FRAME_W = 640
+FRAME_H = 480
 FRAME_SHM_SIZE = 12 + FRAME_W * FRAME_H * 3
 
 # robot_meta: 256 bytes, JSON string, null-padded
 META_SHM_SIZE = 256
+
 
 # ── Shared memory setup ───────────────────────────────────────────────────────
 def _create_or_attach(name: str, size: int) -> SharedMemory:
@@ -67,20 +69,24 @@ def _create_or_attach(name: str, size: int) -> SharedMemory:
         shm = SharedMemory(name=name, create=False, size=size)
     return shm
 
+
 shm_frame = _create_or_attach("robot_frame", FRAME_SHM_SIZE)
-shm_meta  = _create_or_attach("robot_meta",  META_SHM_SIZE)
+shm_meta = _create_or_attach("robot_meta", META_SHM_SIZE)
 print("[face_track] shared memory ready")
+
 
 def _write_frame(frame_rgb, counter: int) -> None:
     buf = shm_frame.buf
     struct.pack_into(">III", buf, 0, counter, FRAME_W, FRAME_H)
     flat = frame_rgb.tobytes()
-    buf[12:12 + len(flat)] = flat
+    buf[12 : 12 + len(flat)] = flat
+
 
 def _write_meta(meta: dict) -> None:
     raw = json.dumps(meta).encode("utf-8")
-    raw = raw[:META_SHM_SIZE - 1].ljust(META_SHM_SIZE, b"\x00")
+    raw = raw[: META_SHM_SIZE - 1].ljust(META_SHM_SIZE, b"\x00")
     shm_meta.buf[:META_SHM_SIZE] = raw
+
 
 def _write_files(frame_rgb, meta: dict) -> None:
     """Write frame + meta to /tmp atomically so Godot never reads a partial file."""
@@ -106,8 +112,10 @@ def _write_files(frame_rgb, meta: dict) -> None:
     except Exception:
         pass
 
+
 # ── Bridge TCP connection ─────────────────────────────────────────────────────
 _sock: socket.socket | None = None
+
 
 def _connect_bridge() -> bool:
     global _sock
@@ -121,21 +129,25 @@ def _connect_bridge() -> bool:
     except OSError:
         return False
 
+
 def _send_servo(axis: str, angle: int) -> None:
     if _sock is None:
         return
-    cmd = f"servo:{axis}:{angle}\n"
+    cmd = f"servo:{axis.lower()}:{angle}\n"
     try:
         _sock.sendall(cmd.encode("utf-8"))
     except OSError:
         pass
+
 
 if _connect_bridge():
     print(f"[face_track] bridge connected")
     _send_servo("H", SERVO_H_CENTER)
     _send_servo("V", SERVO_V_CENTER)
     time.sleep(0.1)
-    print(f"[face_track] servos initialized to center H={SERVO_H_CENTER} V={SERVO_V_CENTER}")
+    print(
+        f"[face_track] servos initialized to center H={SERVO_H_CENTER} V={SERVO_V_CENTER}"
+    )
 else:
     print(f"[face_track] bridge not available (continuing without servo output)")
 
@@ -145,27 +157,29 @@ face_cascade = cv2.CascadeClassifier(
 )
 
 cap = cv2.VideoCapture(CAMERA_INDEX)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH,  FRAME_W)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_W)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_H)
 
 if not cap.isOpened():
     print(f"[face_track] could not open camera {CAMERA_INDEX}")
-    shm_frame.close(); shm_frame.unlink()
-    shm_meta.close();  shm_meta.unlink()
+    shm_frame.close()
+    shm_frame.unlink()
+    shm_meta.close()
+    shm_meta.unlink()
     exit(1)
 
 print(f"[face_track] camera open: {FRAME_W}x{FRAME_H}")
 print("Hotkeys: Q=quit  SPACE=pause/resume  R=reset servos  +/-=gain")
 
 # ── State ─────────────────────────────────────────────────────────────────────
-servo_h           = float(SERVO_H_CENTER)   # smoothed running position (float)
-servo_v           = float(SERVO_V_CENTER)
-last_sent_h       = SERVO_H_CENTER          # last integer value actually sent
-last_sent_v       = SERVO_V_CENTER
+servo_h = float(SERVO_H_CENTER)  # smoothed running position (float)
+servo_v = float(SERVO_V_CENTER)
+last_sent_h = SERVO_H_CENTER  # last integer value actually sent
+last_sent_v = SERVO_V_CENTER
 face_ever_detected = False
-paused            = False
-frame_ctr         = 0
-last_send         = 0.0
+paused = False
+frame_ctr = 0
+last_send = 0.0
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
 try:
@@ -186,8 +200,8 @@ try:
         off_y = 0.0
 
         if not paused:
-            gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            gray  = cv2.equalizeHist(gray)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            gray = cv2.equalizeHist(gray)
             faces = face_cascade.detectMultiScale(
                 gray, scaleFactor=1.1, minNeighbors=5, minSize=(80, 80)
             )
@@ -237,57 +251,141 @@ try:
 
                 l, t = 16, 3
                 for px, py, dx, dy in [
-                    (x,      y,      1,  1),
-                    (x + bw, y,     -1,  1),
-                    (x,      y + bh, 1, -1),
-                    (x + bw, y + bh,-1, -1),
+                    (x, y, 1, 1),
+                    (x + bw, y, -1, 1),
+                    (x, y + bh, 1, -1),
+                    (x + bw, y + bh, -1, -1),
                 ]:
                     cv2.line(frame, (px, py), (px + dx * l, py), (0, 255, 120), t)
                     cv2.line(frame, (px, py), (px, py + dy * l), (0, 255, 120), t)
 
                 cv2.circle(frame, (face_cx, face_cy), 4, (0, 220, 100), -1)
-                cv2.line(frame, (cx_frame, cy_frame), (face_cx, face_cy), (0, 180, 80), 1)
+                cv2.line(
+                    frame, (cx_frame, cy_frame), (face_cx, face_cy), (0, 180, 80), 1
+                )
 
                 label = f"{distance_cm:.0f} cm"
-                cv2.putText(frame, label, (x, y - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 220, 100), 2)
+                cv2.putText(
+                    frame,
+                    label,
+                    (x, y - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.65,
+                    (0, 220, 100),
+                    2,
+                )
 
-                cv2.putText(frame, "FACE DETECTED", (10, 28),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 220, 100), 2)
+                cv2.putText(
+                    frame,
+                    "FACE DETECTED",
+                    (10, 28),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.65,
+                    (0, 220, 100),
+                    2,
+                )
             else:
-                cv2.putText(frame, "no face", (10, 28),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.65, (80, 80, 255), 2)
+                # Slowly drift back to center when face is lost
+                servo_h += (SERVO_H_CENTER - servo_h) * SMOOTH_RETURN
+                servo_v += (SERVO_V_CENTER - servo_v) * SMOOTH_RETURN
+                now = time.monotonic()
+                if now - last_send >= SEND_INTERVAL:
+                    ih = int(round(servo_h))
+                    iv = int(round(servo_v))
+                    if abs(ih - last_sent_h) >= 3:
+                        _send_servo("h", ih)
+                        last_sent_h = ih
+                    if abs(iv - last_sent_v) >= 3:
+                        _send_servo("v", iv)
+                        last_sent_v = iv
+                    last_send = now
+                cv2.putText(
+                    frame,
+                    "no face",
+                    (10, 28),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.65,
+                    (80, 80, 255),
+                    2,
+                )
         else:
-            cv2.putText(frame, "PAUSED", (10, 28),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (80, 80, 255), 2)
+            cv2.putText(
+                frame,
+                "PAUSED",
+                (10, 28),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.65,
+                (80, 80, 255),
+                2,
+            )
 
         # ── Center crosshair ──────────────────────────────────────────────────
-        cv2.line(frame, (cx_frame - 20, cy_frame), (cx_frame + 20, cy_frame), (255, 255, 255), 1)
-        cv2.line(frame, (cx_frame, cy_frame - 20), (cx_frame, cy_frame + 20), (255, 255, 255), 1)
+        cv2.line(
+            frame,
+            (cx_frame - 20, cy_frame),
+            (cx_frame + 20, cy_frame),
+            (255, 255, 255),
+            1,
+        )
+        cv2.line(
+            frame,
+            (cx_frame, cy_frame - 20),
+            (cx_frame, cy_frame + 20),
+            (255, 255, 255),
+            1,
+        )
 
         # ── HUD bottom-left ───────────────────────────────────────────────────
-        cv2.putText(frame, f"dist : {distance_cm:.0f} cm",
-                    (10, h - 80), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (200, 200, 200), 1)
-        cv2.putText(frame, f"off x: {off_x:+.2f}",
-                    (10, h - 58), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (200, 200, 200), 1)
-        cv2.putText(frame, f"off y: {off_y:+.2f}",
-                    (10, h - 36), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (200, 200, 200), 1)
-        cv2.putText(frame, f"servo: H={int(servo_h)} V={int(servo_v)}",
-                    (10, h - 14), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (200, 200, 200), 1)
+        cv2.putText(
+            frame,
+            f"dist : {distance_cm:.0f} cm",
+            (10, h - 80),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.55,
+            (200, 200, 200),
+            1,
+        )
+        cv2.putText(
+            frame,
+            f"off x: {off_x:+.2f}",
+            (10, h - 58),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.55,
+            (200, 200, 200),
+            1,
+        )
+        cv2.putText(
+            frame,
+            f"off y: {off_y:+.2f}",
+            (10, h - 36),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.55,
+            (200, 200, 200),
+            1,
+        )
+        cv2.putText(
+            frame,
+            f"servo: H={int(servo_h)} V={int(servo_v)}",
+            (10, h - 14),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.55,
+            (200, 200, 200),
+            1,
+        )
 
         # ── Write shared memory + files ───────────────────────────────────────
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame_ctr += 1
         meta = {
-            "face":     bool(tracking),
-            "cx":       int(face_cx),
-            "cy":       int(face_cy),
-            "dist":     round(float(distance_cm), 1),
-            "off_x":    round(float(off_x), 3),
-            "off_y":    round(float(off_y), 3),
+            "face": bool(tracking),
+            "cx": int(face_cx),
+            "cy": int(face_cy),
+            "dist": round(float(distance_cm), 1),
+            "off_x": round(float(off_x), 3),
+            "off_y": round(float(off_y), 3),
             "tracking": bool(tracking),
-            "servo_h":  servo_h,
-            "servo_v":  servo_v,
+            "servo_h": servo_h,
+            "servo_v": servo_v,
         }
         _write_frame(frame_rgb, frame_ctr)
         _write_meta(meta)
